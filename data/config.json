@@ -1,0 +1,26 @@
+{
+    "database": {
+        "table_name": "Alunos",
+        "record_size_fixed": 128,
+        "block_size": 4096,
+        "max_records": 10000
+    },
+    "file_paths": {
+        "data_file": "data/test_data.csv",
+        "deleted_records_file": "data/deleted_records.txt",
+        "report_file": "docs/report.md"
+    },
+    "performance": {
+        "measure_time": true,
+        "run_tests": true,
+        "num_iterations": 5
+    },
+    "hashing": {
+        "buckets": 27,
+        "collision_resolution": "linked_list"
+    },
+    "compression": {
+        "enable": true,
+        "threshold": 75
+    }
+}
