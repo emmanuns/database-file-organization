@@ -36,7 +36,7 @@ class VariableSizeHeap:
 
     def select(self, key):
         for record in self.records:
-            if record is not None and record.get('key') == key:
+            if record is not None and record['show_id'] == key:
                 return record
         return None 
 
