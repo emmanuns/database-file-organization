@@ -4,6 +4,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 import time
 from FixedHeap import FixedSizeHeap
+from OrderedFile import OrderedFile
 import pandas as pd
 
 def load_records():
@@ -53,11 +54,13 @@ class PerformanceTest:
 record_count = 10  
 record_size = 100    
 
-heap_fixed = FixedSizeHeap(record_size)
+heap_fixed = FixedSizeHeap(record_size, "file")
+orderred_file = OrderedFile(record_size)
 
 
 structures = {
-    'Heap Fixo': heap_fixed
+    'Heap Fixo': heap_fixed,
+    "Ordered File": orderred_file
 }
 
 performance_test = PerformanceTest(record_count, record_size)
