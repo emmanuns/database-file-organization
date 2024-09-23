@@ -27,7 +27,8 @@ class VariableSizeHeap:
                 self.records[i] = None
                 self.deleted_indices.append(i)
                 self.delete_count += 1
-                
+    
+        
                 if self.delete_count >= 10:
                     self.save_to_file()  
                     self.delete_count = 0 
@@ -36,7 +37,7 @@ class VariableSizeHeap:
 
     def select(self, key):
         for record in self.records:
-            if record is not None and record['show_id'] == key:
+            if record is not None and record.get('show_id') == key:
                 return record
         return None 
 
