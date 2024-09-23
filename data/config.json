@@ -1,9 +1,10 @@
 {
     "database": {
-        "table_name": "Alunos",
+        "table_name": "Netflix",
         "record_size_fixed": 128,
         "block_size": 4096,
-        "max_records": 10000
+        "max_records": 10000,
+        "csv_file": "data/netflix_titles.csv"
     },
     "file_paths": {
         "data_file": "data/test_data.csv",
