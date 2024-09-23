@@ -1,9 +1,21 @@
+import csv
+
 class OrderedFile:
-    def __init__(self, record_size):
+    def __init__(self, record_size, filename=None):
         self.record_size = record_size
         self.main_file = []
         self.extension_file = []
         self.deleted_marks = []
+        
+        if filename:
+            self.load_from_file(filename)
+
+    def load_from_file(self, filename):
+        with open(filename, mode='r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if len(row) == self.record_size:
+                    self.main_file.append(row)
 
     def insert(self, record):
         if len(record) != self.record_size:
