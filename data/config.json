@@ -23,5 +23,9 @@
     "compression": {
         "enable": true,
         "threshold": 75
+    },
+
+    "fixed_heap": {
+        "sizes": [5,7,100,50,150,20,10,4,5,9]
     }
 }

@@ -15,6 +15,7 @@ class VariableSizeHeap:
             self.records[index] = record
         else:
             self.records.append(record)
+            
 
         self.insert_count += 1
         if self.insert_count >= 10:
@@ -23,11 +24,10 @@ class VariableSizeHeap:
 
     def delete(self, key):
         for i, record in enumerate(self.records):
-            if record is not None and record.get('key') == key:
+            if record is not None and record.get('show_id') == key:
                 self.records[i] = None
                 self.deleted_indices.append(i)
                 self.delete_count += 1
-    
         
                 if self.delete_count >= 10:
                     self.save_to_file()  
@@ -45,6 +45,9 @@ class VariableSizeHeap:
         try:
             with open(self.filename, 'r') as f:
                 self.records = json.load(f)
+                #transformar em dict
+                #self.records = [dict(record) for record in self.records]
+
         except FileNotFoundError:
             self.records = []
 
