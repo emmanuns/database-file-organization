@@ -3,11 +3,11 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 
-from src.ExternalHashStatic import ExternalHash  # Ajuste o caminho conforme necessário
+from src.ExternalHashStatic import ExternalHashStatic  # Ajuste o caminho conforme necessário
 
 class TestExternalHash(unittest.TestCase):
     def setUp(self):
-        self.hash_table = ExternalHash('test_hash_table.pkl')
+        self.hash_table = ExternalHashStatic('test_hash_table.pkl')
 
     def test_insert_and_search(self):
         self.hash_table.insert('key1', 'value1')
