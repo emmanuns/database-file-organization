@@ -31,11 +31,13 @@ class ExternalHashStatic:
 
     def remove(self, key):
         index = self.hash_function(key)
-        for i in self.buckets:
-            for j, (k, v) in enumerate(i.elements):
-                if k == key:
-                    del self.buckets[j]
-                    return True
+        bucket = self.buckets[index]
+        i = 0
+        for k,v in bucket.elements:
+            if k == key:
+                del bucket.elements[i]
+                return True
+            i += 1
         return False
 
     def search(self, key):

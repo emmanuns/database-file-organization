@@ -7,7 +7,7 @@ from src.ExternalHashStatic import ExternalHashStatic  # Ajuste o caminho confor
 
 class TestExternalHash(unittest.TestCase):
     def setUp(self):
-        self.hash_table = ExternalHashStatic(3,10)
+        self.hash_table = ExternalHashStatic(3,5)
 
     def test_insert_and_search(self):
         self.hash_table.insert('key1', 'value1')
