@@ -9,45 +9,57 @@ class FixedSizeHeap:
         self.delete_count = 0  
         self.load_from_file()  
 
-    def insert(self, record, column_size):
+    def insert(self, records, column_size):
         """Insere um registro no heap fixo."""
-        serialized_record = self.serialize_record(record)
+        data_ids = []
+        for record in records:
+            record = self.serialize_record(record)
+            for key, value in record.items():
+                if len(value) > column_size[key]:
+                    raise ValueError(f"O dado '{value}' é maior que o tamanho permitido {column_size[key]} e possui {len(value)} caracteres")
+            if self.deleted_records:
+                index = self.deleted_records.pop(0)
+                self.records[index] = record
+            else:
+                self.records.append(record)
 
-        for idx, data in enumerate(serialized_record):
-            if len(data) > column_size[idx]:
-                raise ValueError(f"O dado '{data}' é maior que o tamanho permitido {column_size[idx]} e possui {len(data)} caracteres")
+            self.insert_count += 1
+            if self.insert_count >= 10:
+                self.save_to_file()  
+                self.insert_count = 0 
+            data_ids.append(record['show_id'])
+        
+        return data_ids
+             
 
-        if self.deleted_records:
-            index = self.deleted_records.pop(0)
-            self.records[index] = serialized_record
-        else:
-            self.records.append(serialized_record)
-
-        self.insert_count += 1
-        if self.insert_count >= 10:
-            self.save_to_file()  
-            self.insert_count = 0  
-
-    def delete(self, index):
+    def delete(self, indexes):
+        if not isinstance(indexes, list):
+            indexes = [indexes]
         """Remove um registro pelo índice e marca como excluído."""
-        if 0 <= index < len(self.records):
-            self.records[index] = None
-            self.deleted_records.append(index)
-            self.delete_count += 1
-            
-            if self.delete_count >= 10:
-                self.compress()  # Pode ser uma boa ideia
-                self.save_to_file() 
-                self.delete_count = 0  
-        else:
-            raise IndexError("Índice fora do intervalo.")
-
-    def get_record(self, index):
-        """Obtém um registro pelo índice."""
-        if 0 <= index < len(self.records):
-            return self.records[index]
-        else:
-            raise IndexError("Índice fora do intervalo.")
+        for record in self.records:
+            if record is not None and record['show_id'].strip() in indexes:
+                record_index = self.records.index(record)
+                self.records[record_index] = None
+                self.deleted_records.append(record_index)
+                self.delete_count += 1
+                
+                if self.delete_count >= 10:
+                    self.compress()  
+                    self.save_to_file()  
+                    self.delete_count = 0
+        return
+        
+    def select(self, index = None):
+        if index is None:
+            return self.records
+        if not isinstance(index, list):
+            index = [index]
+        result = []
+        """Seleciona um registro pelo índice."""
+        for record in self.records:
+            if record is not None and record['show_id'].strip() in index:
+                result.append(record)
+        return result
         
     def get_record_by_show_id(self, show_id):
         """Obtém um registro pelo show_id."""
@@ -56,7 +68,7 @@ class FixedSizeHeap:
                 return self.deserialize_record(record)
         return None
 
-    def load_from_file(self):
+    def load_from_file(self, filename=None):
         """Carrega registros de um arquivo JSON."""
         try:
             with open(self.filename, 'r') as f:
@@ -76,21 +88,24 @@ class FixedSizeHeap:
         self.save_to_file()  
 
     def truncate_string(self, data, max_length):
+        if data is None:
+            return ""
         if len(data) > max_length:
             return data[:max_length]
         return data
 
     def serialize_record(self, record):
-        return (f"{self.truncate_string(str(record['show_id']), 5):<5}",               # show_id: máximo 5 caracteres
-                f"{self.truncate_string(str(record['type']), 7):<7}",                # type: máximo 7 caracteres
-                f"{self.truncate_string(str(record['title']), 100):<100}",             # title: máximo 100 caracteres
-                f"{self.truncate_string(str(record['director']), 50):<50}",           # director: máximo 50 caracteres
-                f"{self.truncate_string(str(record['cast']), 150):<150}",               # cast: máximo 150 caracteres (reduzido)
-                f"{self.truncate_string(str(record['country']), 20):<20}",            # country: máximo 20 caracteres
-                f"{self.truncate_string(record['date_added'], 10):<10}",         # date_added: fixo (10 caracteres)
-                f"{self.truncate_string(str(record['release_year']), 4):<4}",        # release_year: fixo (4 caracteres)
-                f"{self.truncate_string(str(record['rating']), 5):<5}",               # rating: máximo 5 caracteres
-                f"{self.truncate_string(str(record['duration']), 9):<9}")            # duration: máximo 9 caracteres
+        return {'show_id': f"{self.truncate_string(str(record['show_id']), 5):<5}",
+                'type': f"{self.truncate_string(str(record['type']), 7):<7}",  
+                'title': f"{self.truncate_string(str(record['title']), 100):<100}",
+                'director': f"{self.truncate_string(str(record['director']), 50):<50}",
+                'cast': f"{self.truncate_string(str(record['cast']), 150):<150}",
+                'country': f"{self.truncate_string(str(record['country']), 20):<20}",
+                'date_added': f"{self.truncate_string(record['date_added'], 10):<10}", 
+                'release_year': f"{self.truncate_string(str(record['release_year']), 4):<4}", 
+                'rating':f"{self.truncate_string(str(record['rating']), 5):<5}", 
+                'duration': f"{self.truncate_string(str(record['duration']), 9):<9}"
+        }          
 
     def deserialize_record(self, serialized_record):
         return {
